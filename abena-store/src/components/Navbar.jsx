@@ -21,7 +21,8 @@ export default function Navbar({ setPage, onCartOpen, query, setQuery, category,
       </div>
 
       <div className="max-w-6xl mx-auto px-4 py-3 flex items-center gap-4">
-        <button onClick={() => setPage('shop')} className="shrink-0 text-left">
+        <button onClick={() => setPage('shop')} className="shrink-0 text-left flex items-center gap-2">
+          <img src="/logo.svg" alt="Logo" className="w-9 h-9" />
           <span className="text-2xl sm:text-3xl font-extrabold tracking-tight">
             <span className="text-slate-900">YELOYOUNG</span>
             <span className="text-brand">AND ACCESORIES</span>

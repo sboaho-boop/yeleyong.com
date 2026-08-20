@@ -26,7 +26,8 @@ export default function Footer({ setPage }) {
     <footer className="bg-slate-900 text-slate-300">
       <div className="max-w-6xl mx-auto px-4 py-10 grid sm:grid-cols-3 gap-8">
         <div>
-          <p className="font-extrabold text-white text-lg tracking-tight">
+          <p className="font-extrabold text-white text-lg tracking-tight flex items-center gap-2">
+            <img src="/logo.svg" alt="Logo" className="w-8 h-8" />
             YELOYOUNG<span className="text-brand"> AND ACCESORIES</span>
           </p>
           <p className="text-sm text-slate-400 mt-2">{settings.tagline}</p>
