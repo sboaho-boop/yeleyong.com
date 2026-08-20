@@ -93,24 +93,6 @@ export default function ShopPage({ onAdd, goCheckout, category, setCategory, que
         </div>
       </section>
 
-      <section className="max-w-6xl mx-auto px-4 py-6">
-        <h2 className="font-bold text-slate-800 mb-3">Shop by Category</h2>
-        <div className="grid grid-cols-3 sm:grid-cols-5 gap-3">
-          {featured.map((c) => (
-            <button
-              key={c}
-              onClick={() => setCategory(c)}
-              className="group flex flex-col items-center gap-2 rounded-lg bg-white border border-slate-200 p-4 hover:border-brand hover:shadow-sm transition"
-            >
-              <span className="text-3xl group-hover:scale-110 transition">
-                {c === 'Fashion' ? '👗' : c === 'Beauty' ? '🧴' : c === 'Electronics' ? '🎧' : c === 'Home' ? '🏠' : '🍽️'}
-              </span>
-              <span className="text-xs font-semibold text-slate-600 group-hover:text-brand">{c}</span>
-            </button>
-          ))}
-        </div>
-      </section>
-
       <section className="max-w-6xl mx-auto px-4 pb-8">
         <div className="flex items-center justify-between mb-3">
           <h2 className="font-bold text-slate-800">
