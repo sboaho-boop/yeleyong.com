@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { StoreProvider, useStore } from './StoreContext'
 import Navbar from './components/Navbar'
 import ShopPage from './components/ShopPage'
@@ -6,15 +6,35 @@ import CartDrawer from './components/CartDrawer'
 import CheckoutPage from './components/CheckoutPage'
 import TrackPage from './components/TrackPage'
 import AdminPage from './components/AdminPage'
+import AdminLogin from './components/AdminLogin'
 import Footer from './components/Footer'
 
 function App() {
-  const { addToCart } = useStore()
-  const [page, setPage] = useState('shop')
+  const { addToCart, isAdminLoggedIn } = useStore()
+  const [page, setPage] = useState(() => window.location.hash === '#admin' ? 'admin' : 'shop')
   const [cartOpen, setCartOpen] = useState(false)
   const [placedOrderId, setPlacedOrderId] = useState(null)
   const [category, setCategory] = useState('All')
   const [query, setQuery] = useState('')
+
+  useEffect(() => {
+    function onHashChange() {
+      if (window.location.hash === '#admin') {
+        setPage('admin')
+      }
+    }
+    window.addEventListener('hashchange', onHashChange)
+    return () => window.removeEventListener('hashchange', onHashChange)
+  }, [])
+
+  function navigate(newPage) {
+    setPage(newPage)
+    if (newPage === 'admin') {
+      window.location.hash = 'admin'
+    } else {
+      history.replaceState(null, '', window.location.pathname + window.location.search)
+    }
+  }
 
   function handleAdd(productId) {
     addToCart(productId)
@@ -22,18 +42,18 @@ function App() {
 
   function goCheckout() {
     setCartOpen(false)
-    setPage('checkout')
+    navigate('checkout')
   }
 
   function handleOrderPlaced(orderId) {
     setPlacedOrderId(orderId)
-    setPage('track')
+    navigate('track')
   }
 
   return (
     <div className="min-h-screen flex flex-col bg-slate-50 text-slate-900">
       <Navbar
-        setPage={setPage}
+        setPage={navigate}
         onCartOpen={() => setCartOpen(true)}
         query={query}
         setQuery={setQuery}
@@ -54,7 +74,7 @@ function App() {
         {page === 'checkout' && (
           <CheckoutPage
             onOrderPlaced={handleOrderPlaced}
-            goShop={() => setPage('shop')}
+            goShop={() => navigate('shop')}
           />
         )}
         {page === 'track' && (
@@ -63,10 +83,10 @@ function App() {
             onDismissPlaced={() => setPlacedOrderId(null)}
           />
         )}
-        {page === 'admin' && <AdminPage />}
+        {page === 'admin' && (isAdminLoggedIn ? <AdminPage /> : <AdminLogin />)}
       </main>
 
-      <Footer setPage={setPage} />
+      <Footer setPage={navigate} />
 
       <CartDrawer
         open={cartOpen}

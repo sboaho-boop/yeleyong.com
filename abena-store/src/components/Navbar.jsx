@@ -13,9 +13,6 @@ export default function Navbar({ setPage, onCartOpen, query, setQuery, category,
             <button onClick={() => setPage('track')} className="hover:text-white transition">
               Track your order
             </button>
-            <button onClick={() => setPage('admin')} className="hover:text-white transition">
-              Admin
-            </button>
           </nav>
         </div>
       </div>

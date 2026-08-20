@@ -9,7 +9,6 @@ export default function Footer({ setPage }) {
       items: [
         { label: 'Our story', action: () => setPage('shop') },
         { label: 'Track your order', action: () => setPage('track') },
-        { label: 'Admin panel', action: () => setPage('admin') },
       ],
     },
     {

@@ -8,6 +8,15 @@ const KEYS = {
   orders: 'yeleyong_orders',
   settings: 'yeleyong_settings',
   schema: 'yeleyong_schema_version',
+  admin: 'yeleyong_admin',
+  session: 'yeleyong_session',
+}
+
+async function hashPassword(password) {
+  const encoder = new TextEncoder()
+  const data = encoder.encode(password + 'yeleyong_salt_v1')
+  const hashBuffer = await crypto.subtle.digest('SHA-256', data)
+  return Array.from(new Uint8Array(hashBuffer)).map((b) => b.toString(16).padStart(2, '0')).join('')
 }
 
 const SCHEMA_VERSION = 'v3-phones-accessories'
@@ -75,6 +84,49 @@ export function StoreProvider({ children }) {
   const [cart, setCart] = useState(() => load(KEYS.cart, []))
   const [orders, setOrders] = useState(() => load(KEYS.orders, []))
   const [settings, setSettings] = useState(() => ({ ...DEFAULT_SETTINGS, ...load(KEYS.settings, {}) }))
+  const [adminUser, setAdminUser] = useState(() => load(KEYS.session, null))
+
+  const isAdminLoggedIn = !!adminUser
+
+  async function registerAdmin(email, password) {
+    const existing = load(KEYS.admin, null)
+    if (existing) {
+      return { ok: false, error: 'An admin account already exists. Please login instead.' }
+    }
+    const hashed = await hashPassword(password)
+    save(KEYS.admin, { email: email.toLowerCase().trim(), passwordHash: hashed })
+    const user = { email: email.toLowerCase().trim() }
+    save(KEYS.session, user)
+    setAdminUser(user)
+    return { ok: true }
+  }
+
+  async function loginAdmin(email, password) {
+    const stored = load(KEYS.admin, null)
+    if (!stored) {
+      return { ok: false, error: 'No admin account found. Please register first.' }
+    }
+    if (stored.email !== email.toLowerCase().trim()) {
+      return { ok: false, error: 'Incorrect email or password.' }
+    }
+    const hashed = await hashPassword(password)
+    if (hashed !== stored.passwordHash) {
+      return { ok: false, error: 'Incorrect email or password.' }
+    }
+    const user = { email: stored.email }
+    save(KEYS.session, user)
+    setAdminUser(user)
+    return { ok: true }
+  }
+
+  function logoutAdmin() {
+    localStorage.removeItem(KEYS.session)
+    setAdminUser(null)
+  }
+
+  function hasAdminAccount() {
+    return !!load(KEYS.admin, null)
+  }
 
   useEffect(() => save(KEYS.products, products), [products])
   useEffect(() => {
@@ -154,8 +206,14 @@ export function StoreProvider({ children }) {
       getOrder,
       settings,
       setSettings,
+      adminUser,
+      isAdminLoggedIn,
+      registerAdmin,
+      loginAdmin,
+      logoutAdmin,
+      hasAdminAccount,
     }),
-    [products, cart, orders, settings],
+    [products, cart, orders, settings, adminUser],
   )
 
   return <StoreContext.Provider value={value}>{children}</StoreContext.Provider>

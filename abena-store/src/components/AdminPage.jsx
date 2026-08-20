@@ -27,7 +27,7 @@ function readFileAsDataURL(file) {
 }
 
 export default function AdminPage() {
-  const { products, setProducts, settings, setSettings, orders, updateOrderStatus } = useStore()
+  const { products, setProducts, settings, setSettings, orders, updateOrderStatus, logoutAdmin, adminUser } = useStore()
   const [tab, setTab] = useState('products')
   const [form, setForm] = useState(EMPTY_FORM)
 
@@ -75,7 +75,15 @@ export default function AdminPage() {
 
   return (
     <div className="max-w-6xl mx-auto px-4 py-10">
-      <h1 className="text-3xl font-extrabold mb-2">Admin Panel</h1>
+      <div className="flex items-center justify-between mb-2">
+        <h1 className="text-3xl font-extrabold">Admin Panel</h1>
+        <div className="flex items-center gap-3">
+          {adminUser && <span className="text-sm text-slate-500">{adminUser.email}</span>}
+          <button onClick={logoutAdmin} className="px-4 py-2 rounded-xl bg-slate-100 text-slate-600 text-sm font-semibold hover:bg-slate-200 transition">
+            Logout
+          </button>
+        </div>
+      </div>
       <p className="text-slate-500 mb-6">Manage your products, orders and store settings.</p>
 
       <div className="flex gap-2 mb-8">
