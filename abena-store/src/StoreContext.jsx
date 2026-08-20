@@ -10,11 +10,11 @@ const KEYS = {
   schema: 'yeloyoung_schema_version',
 }
 
-const SCHEMA_VERSION = 'v2-real-products'
+const SCHEMA_VERSION = 'v3-phones-accessories'
 
 export const DEFAULT_SETTINGS = {
-  storeName: 'YELOYOUNG AND ACCESORIES',
-  tagline: 'Quality general goods at your doorstep',
+  storeName: 'YELOYOUNG PHONES AND ACCESSORIES',
+  tagline: 'Quality phones and accessories at your doorstep',
   whatsapp: '233542391449',
   promoCode: 'YELO10',
   promoDiscount: 10,
@@ -26,23 +26,23 @@ export const DEFAULT_SETTINGS = {
 const img = (id) => `https://images.unsplash.com/photo-${id}?auto=format&fit=crop&w=400&q=80`
 
 export const DEFAULT_PRODUCTS = [
-  { id: 'p1', name: 'Nike-Style Running Sneaker', category: 'Fashion', price: 350, discount: 10, image: img('1542291026-7eec264c27ff'), emoji: '👟', color: '#ef4444', inStock: true },
-  { id: 'p2', name: 'Classic White Sneakers (Pair)', category: 'Fashion', price: 220, discount: 0, image: img('1549298916-b41d501d3772'), emoji: '👟', color: '#0ea5e9', inStock: true },
-  { id: 'p3', name: 'Men\'s Leather Wristwatch', category: 'Fashion', price: 380, discount: 5, image: img('1523275335684-37898b6baf30'), emoji: '⌚', color: '#a855f7', inStock: true },
-  { id: 'p4', name: 'Aviator Sunglasses', category: 'Fashion', price: 90, discount: 0, image: img('1572635196237-14b3f281503f'), emoji: '🕶️', color: '#f59e0b', inStock: true },
-  { id: 'p5', name: '100% Cotton T-Shirt (Pack of 2)', category: 'Fashion', price: 130, discount: 0, image: img('1521572163474-6864f9cf17ab'), emoji: '👕', color: '#64748b', inStock: true },
-  { id: 'p6', name: 'Ladies\' Classic Handbag', category: 'Fashion', price: 250, discount: 15, image: img('1584917865442-de89df76afd3'), emoji: '👜', color: '#f43f5e', inStock: true },
-  { id: 'p7', name: 'Instant Camera', category: 'Electronics', price: 850, discount: 10, image: img('1526170375885-4d8ecf77b99f'), emoji: '📷', color: '#22c55e', inStock: true },
-  { id: 'p8', name: 'Wireless Headphones', category: 'Electronics', price: 320, discount: 0, image: img('1505740420928-5e560c06d30e'), emoji: '🎧', color: '#06b6d4', inStock: true },
-  { id: 'p9', name: 'Smartphone (Unlocked)', category: 'Electronics', price: 1200, discount: 0, image: img('1511707171634-5f897ff02aa9'), emoji: '📱', color: '#6366f1', inStock: true },
-  { id: 'p10', name: 'Designer Perfume 100ml', category: 'Beauty', price: 260, discount: 0, image: img('1541643600914-78b084683601'), emoji: '🌸', color: '#8b5cf6', inStock: true },
-  { id: 'p11', name: 'Skincare Cream Set', category: 'Beauty', price: 150, discount: 20, image: img('1526947425960-945c6e72858f'), emoji: '🧴', color: '#ec4899', inStock: true },
-  { id: 'p12', name: 'Kitchen Utensils Set', category: 'Home', price: 480, discount: 5, image: img('1556911220-bff31c812dba'), emoji: '🍳', color: '#ef4444', inStock: true },
-  { id: 'p13', name: 'Roasted Coffee Beans 250g', category: 'Food', price: 95, discount: 0, image: img('1447933601403-0c6688de566e'), emoji: '☕', color: '#92400e', inStock: true },
-  { id: 'p14', name: 'Gold-Plated Necklace', category: 'Fashion', price: 310, discount: 0, image: img('1599643478518-a784e5dc4c8f'), emoji: '📿', color: '#d97706', inStock: true },
+  { id: 'p1', name: 'Samsung Galaxy A15', category: 'Phones', price: 1500, discount: 5, image: img('1511707171634-5f897ff02aa9'), emoji: '📱', color: '#6366f1', inStock: true },
+  { id: 'p2', name: 'iPhone 14 Pro', category: 'Phones', price: 5500, discount: 0, image: img('1592743399245-40052a05e8e4'), emoji: '📱', color: '#0ea5e9', inStock: true },
+  { id: 'p3', name: 'Tecno Spark 20', category: 'Phones', price: 1200, discount: 10, image: img('1585060750685-32af941e7fd0'), emoji: '📱', color: '#22c55e', inStock: true },
+  { id: 'p4', name: 'Infinix Hot 40', category: 'Phones', price: 1100, discount: 0, image: img('1565849904461-a8e81571b385'), emoji: '📱', color: '#f59e0b', inStock: true },
+  { id: 'p5', name: 'Samsung Galaxy S24', category: 'Phones', price: 6200, discount: 5, image: img('1610945415295-d9bbf067e59c'), emoji: '📱', color: '#a855f7', inStock: true },
+  { id: 'p6', name: 'Wireless Earbuds Pro', category: 'Accessories', price: 180, discount: 15, image: img('1505740420928-5e560c06d30e'), emoji: '🎧', color: '#06b6d4', inStock: true },
+  { id: 'p7', name: 'Bluetooth Headphones', category: 'Accessories', price: 250, discount: 0, image: img('1583394838336-acd977736f90'), emoji: '🎧', color: '#8b5cf6', inStock: true },
+  { id: 'p8', name: 'Fast Charger 65W', category: 'Accessories', price: 120, discount: 10, image: img('1609091839314-dc0bfbe60f56'), emoji: '🔌', color: '#ef4444', inStock: true },
+  { id: 'p9', name: 'Power Bank 20000mAh', category: 'Accessories', price: 200, discount: 0, image: img('1609582148258-3240f3e38065'), emoji: '🔋', color: '#22c55e', inStock: true },
+  { id: 'p10', name: 'Tempered Glass Screen Protector', category: 'Accessories', price: 30, discount: 0, image: img('1592899677977-9c10ca588bbd'), emoji: '🛡️', color: '#64748b', inStock: true },
+  { id: 'p11', name: 'Silicone Phone Case', category: 'Accessories', price: 50, discount: 0, image: img('1601784551446-20c9e07cdbdb'), emoji: '📱', color: '#f43f5e', inStock: true },
+  { id: 'p12', name: 'USB-C Charging Cable (2m)', category: 'Accessories', price: 25, discount: 0, image: img('1558618666-fcd25c85f82e'), emoji: '🔌', color: '#d97706', inStock: true },
+  { id: 'p13', name: 'Smart Watch Series 8', category: 'Accessories', price: 350, discount: 10, image: img('1546868871-af0de0ae72be'), emoji: '⌚', color: '#a855f7', inStock: true },
+  { id: 'p14', name: 'Car Phone Mount', category: 'Accessories', price: 60, discount: 0, image: img('1558618666-fcd25c85f82e'), emoji: '🚗', color: '#0ea5e9', inStock: true },
 ]
 
-export const CATEGORIES = ['All', 'Fashion', 'Beauty', 'Electronics', 'Home', 'Food']
+export const CATEGORIES = ['All', 'Phones', 'Accessories']
 
 export const ORDER_STATUSES = [
   { id: 'pending', label: 'Pending', color: 'bg-amber-100 text-amber-700' },

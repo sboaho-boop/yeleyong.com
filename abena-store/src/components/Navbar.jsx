@@ -25,7 +25,7 @@ export default function Navbar({ setPage, onCartOpen, query, setQuery, category,
           <img src="/logo.svg" alt="Logo" className="w-9 h-9" />
           <span className="text-2xl sm:text-3xl font-extrabold tracking-tight">
             <span className="text-slate-900">YELOYOUNG</span>
-            <span className="text-brand">AND ACCESORIES</span>
+            <span className="text-brand">PHONES AND ACCESSORIES</span>
           </span>
         </button>
 
