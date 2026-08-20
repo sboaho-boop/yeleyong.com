@@ -3,17 +3,17 @@ import { createContext, useContext, useEffect, useMemo, useState } from 'react'
 const StoreContext = createContext(null)
 
 const KEYS = {
-  products: 'yeloyoung_products',
-  cart: 'yeloyoung_cart',
-  orders: 'yeloyoung_orders',
-  settings: 'yeloyoung_settings',
-  schema: 'yeloyoung_schema_version',
+  products: 'yeleyong_products',
+  cart: 'yeleyong_cart',
+  orders: 'yeleyong_orders',
+  settings: 'yeleyong_settings',
+  schema: 'yeleyong_schema_version',
 }
 
 const SCHEMA_VERSION = 'v3-phones-accessories'
 
 export const DEFAULT_SETTINGS = {
-  storeName: 'YELOYOUNG PHONES AND ACCESSORIES',
+  storeName: 'YELEYONG PHONES AND ACCESSORIES',
   tagline: 'Quality phones and accessories at your doorstep',
   whatsapp: '233542391449',
   promoCode: 'YELO10',

@@ -5,7 +5,7 @@ export default function Footer({ setPage }) {
 
   const links = [
     {
-      title: 'ABOUT YELOYOUNG PHONES AND ACCESSORIES',
+      title: 'ABOUT YELEYONG PHONES AND ACCESSORIES',
       items: [
         { label: 'Our story', action: () => setPage('shop') },
         { label: 'Track your order', action: () => setPage('track') },
@@ -28,7 +28,7 @@ export default function Footer({ setPage }) {
         <div>
           <p className="font-extrabold text-white text-lg tracking-tight flex items-center gap-2">
             <img src="/logo.svg" alt="Logo" className="w-8 h-8" />
-            YELOYOUNG<span className="text-brand"> PHONES AND ACCESORIES</span>
+            YELEYONG<span className="text-brand"> PHONES AND ACCESORIES</span>
           </p>
           <p className="text-sm text-slate-400 mt-2">{settings.tagline}</p>
           <p className="text-sm text-slate-400 mt-1">📍 {settings.location}</p>
