@@ -2,9 +2,8 @@ import { useState } from 'react'
 import { useStore } from '../StoreContext'
 
 export default function AdminLogin() {
-  const { registerAdmin, loginAdmin, hasAdminAccount } = useStore()
-  const isRegister = !hasAdminAccount()
-  const [mode, setMode] = useState(isRegister ? 'register' : 'login')
+  const { registerAdmin, loginAdmin } = useStore()
+  const [mode, setMode] = useState('login')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
@@ -89,19 +88,17 @@ export default function AdminLogin() {
           </button>
         </form>
 
-        {hasAdminAccount() && (
-          <p className="text-center text-sm text-slate-500 mt-4">
-            {mode === 'login' ? (
-              <>Don't have an account?{' '}
-                <button onClick={() => { setMode('register'); setError('') }} className="font-semibold text-slate-900 hover:underline">Register</button>
-              </>
-            ) : (
-              <>Already have an account?{' '}
-                <button onClick={() => { setMode('login'); setError('') }} className="font-semibold text-slate-900 hover:underline">Login</button>
-              </>
-            )}
-          </p>
-        )}
+        <p className="text-center text-sm text-slate-500 mt-4">
+          {mode === 'login' ? (
+            <>Don't have an account?{' '}
+              <button onClick={() => { setMode('register'); setError('') }} className="font-semibold text-slate-900 hover:underline">Register</button>
+            </>
+          ) : (
+            <>Already have an account?{' '}
+              <button onClick={() => { setMode('login'); setError('') }} className="font-semibold text-slate-900 hover:underline">Login</button>
+            </>
+          )}
+        </p>
       </div>
     </div>
   )

@@ -25,3 +25,4 @@ dist-ssr
 
 .vercel
 abena-store/
+server/store.db

@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { useStore, CATEGORIES } from '../StoreContext'
+import { useStore } from '../StoreContext'
 import ProductCard from './ProductCard'
 
 const SLIDES = [
@@ -40,8 +40,6 @@ export default function ShopPage({ onAdd, goCheckout, category, setCategory, que
     const matches = p.name.toLowerCase().includes(query.toLowerCase())
     return inCat && matches
   })
-
-  const featured = CATEGORIES.filter((c) => c !== 'All')
 
   return (
     <div className="bg-slate-100 min-h-screen">

@@ -10,7 +10,7 @@ import AdminLogin from './components/AdminLogin'
 import Footer from './components/Footer'
 
 function App() {
-  const { addToCart, isAdminLoggedIn } = useStore()
+  const { addToCart, isAdminLoggedIn, loading } = useStore()
   const [page, setPage] = useState(() => window.location.hash === '#admin' ? 'admin' : 'shop')
   const [cartOpen, setCartOpen] = useState(false)
   const [placedOrderId, setPlacedOrderId] = useState(null)
@@ -48,6 +48,17 @@ function App() {
   function handleOrderPlaced(orderId) {
     setPlacedOrderId(orderId)
     navigate('track')
+  }
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-slate-50">
+        <div className="text-center">
+          <div className="w-10 h-10 border-4 border-slate-300 border-t-slate-900 rounded-full animate-spin mx-auto mb-3" />
+          <p className="text-slate-500 text-sm font-medium">Loading store...</p>
+        </div>
+      </div>
+    )
   }
 
   return (

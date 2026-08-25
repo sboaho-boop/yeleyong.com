@@ -27,7 +27,7 @@ function readFileAsDataURL(file) {
 }
 
 export default function AdminPage() {
-  const { products, setProducts, settings, setSettings, orders, updateOrderStatus, logoutAdmin, adminUser } = useStore()
+  const { products, setProducts, deleteProduct: removeProduct, settings, setSettings, orders, updateOrderStatus, logoutAdmin, adminUser } = useStore()
   const [tab, setTab] = useState('products')
   const [form, setForm] = useState(EMPTY_FORM)
 
@@ -52,20 +52,21 @@ export default function AdminPage() {
     }
   }
 
-  function saveProduct(e) {
+  async function saveProduct(e) {
     e.preventDefault()
     const data = { ...form, price: Number(form.price) || 0, discount: Number(form.discount) || 0 }
     if (form.id) {
-      setProducts((prev) => prev.map((p) => (p.id === form.id ? { ...p, ...data } : p)))
+      await setProducts({ ...data, id: form.id })
     } else {
-      setProducts((prev) => [{ ...data, id: `p${Date.now()}` }, ...prev])
+      const id = `p${Date.now()}`
+      await setProducts({ ...data, id })
     }
     resetForm()
   }
 
   function deleteProduct(id) {
     if (confirm('Delete this product?')) {
-      setProducts((prev) => prev.filter((p) => p.id !== id))
+      removeProduct(id)
     }
   }
 
@@ -332,7 +333,7 @@ export default function AdminPage() {
             />
           </div>
 
-          <p className="text-xs text-slate-500">All changes save automatically in your browser.</p>
+          <p className="text-xs text-slate-500">All changes save automatically to the cloud.</p>
         </div>
       )}
     </div>

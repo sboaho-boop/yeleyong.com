@@ -1,25 +1,8 @@
-import { createContext, useContext, useEffect, useMemo, useState } from 'react'
+import { createContext, useContext, useEffect, useMemo, useState, useRef } from 'react'
+
+const API = import.meta.env.VITE_API_URL || ''
 
 const StoreContext = createContext(null)
-
-const KEYS = {
-  products: 'yeleyong_products',
-  cart: 'yeleyong_cart',
-  orders: 'yeleyong_orders',
-  settings: 'yeleyong_settings',
-  schema: 'yeleyong_schema_version',
-  admin: 'yeleyong_admin',
-  session: 'yeleyong_session',
-}
-
-async function hashPassword(password) {
-  const encoder = new TextEncoder()
-  const data = encoder.encode(password + 'yeleyong_salt_v1')
-  const hashBuffer = await crypto.subtle.digest('SHA-256', data)
-  return Array.from(new Uint8Array(hashBuffer)).map((b) => b.toString(16).padStart(2, '0')).join('')
-}
-
-const SCHEMA_VERSION = 'v3-phones-accessories'
 
 export const DEFAULT_SETTINGS = {
   storeName: 'YELEYONG PHONES AND ACCESSORIES',
@@ -32,25 +15,6 @@ export const DEFAULT_SETTINGS = {
   location: 'Adenta, Accra - Ghana',
 }
 
-const img = (id) => `https://images.unsplash.com/photo-${id}?auto=format&fit=crop&w=400&q=80`
-
-export const DEFAULT_PRODUCTS = [
-  { id: 'p1', name: 'Samsung Galaxy A15', category: 'Phones', price: 1500, discount: 5, image: img('1511707171634-5f897ff02aa9'), emoji: '📱', color: '#6366f1', inStock: true },
-  { id: 'p2', name: 'iPhone 14 Pro', category: 'Phones', price: 5500, discount: 0, image: img('1592743399245-40052a05e8e4'), emoji: '📱', color: '#0ea5e9', inStock: true },
-  { id: 'p3', name: 'Tecno Spark 20', category: 'Phones', price: 1200, discount: 10, image: img('1585060750685-32af941e7fd0'), emoji: '📱', color: '#22c55e', inStock: true },
-  { id: 'p4', name: 'Infinix Hot 40', category: 'Phones', price: 1100, discount: 0, image: img('1565849904461-a8e81571b385'), emoji: '📱', color: '#f59e0b', inStock: true },
-  { id: 'p5', name: 'Samsung Galaxy S24', category: 'Phones', price: 6200, discount: 5, image: img('1610945415295-d9bbf067e59c'), emoji: '📱', color: '#a855f7', inStock: true },
-  { id: 'p6', name: 'Wireless Earbuds Pro', category: 'Accessories', price: 180, discount: 15, image: img('1505740420928-5e560c06d30e'), emoji: '🎧', color: '#06b6d4', inStock: true },
-  { id: 'p7', name: 'Bluetooth Headphones', category: 'Accessories', price: 250, discount: 0, image: img('1583394838336-acd977736f90'), emoji: '🎧', color: '#8b5cf6', inStock: true },
-  { id: 'p8', name: 'Fast Charger 65W', category: 'Accessories', price: 120, discount: 10, image: img('1609091839314-dc0bfbe60f56'), emoji: '🔌', color: '#ef4444', inStock: true },
-  { id: 'p9', name: 'Power Bank 20000mAh', category: 'Accessories', price: 200, discount: 0, image: img('1609582148258-3240f3e38065'), emoji: '🔋', color: '#22c55e', inStock: true },
-  { id: 'p10', name: 'Tempered Glass Screen Protector', category: 'Accessories', price: 30, discount: 0, image: img('1592899677977-9c10ca588bbd'), emoji: '🛡️', color: '#64748b', inStock: true },
-  { id: 'p11', name: 'Silicone Phone Case', category: 'Accessories', price: 50, discount: 0, image: img('1601784551446-20c9e07cdbdb'), emoji: '📱', color: '#f43f5e', inStock: true },
-  { id: 'p12', name: 'USB-C Charging Cable (2m)', category: 'Accessories', price: 25, discount: 0, image: img('1558618666-fcd25c85f82e'), emoji: '🔌', color: '#d97706', inStock: true },
-  { id: 'p13', name: 'Smart Watch Series 8', category: 'Accessories', price: 350, discount: 10, image: img('1546868871-af0de0ae72be'), emoji: '⌚', color: '#a855f7', inStock: true },
-  { id: 'p14', name: 'Car Phone Mount', category: 'Accessories', price: 60, discount: 0, image: img('1558618666-fcd25c85f82e'), emoji: '🚗', color: '#0ea5e9', inStock: true },
-]
-
 export const CATEGORIES = ['All', 'Phones', 'Accessories']
 
 export const ORDER_STATUSES = [
@@ -61,80 +25,123 @@ export const ORDER_STATUSES = [
   { id: 'cancelled', label: 'Cancelled', color: 'bg-rose-100 text-rose-700' },
 ]
 
-function load(key, fallback) {
+function loadCart() {
   try {
-    const raw = localStorage.getItem(key)
-    return raw ? JSON.parse(raw) : fallback
+    return JSON.parse(localStorage.getItem('yeleyong_cart')) || []
   } catch {
-    return fallback
+    return []
   }
 }
 
-function save(key, value) {
-  localStorage.setItem(key, JSON.stringify(value))
+function saveCart(cart) {
+  localStorage.setItem('yeleyong_cart', JSON.stringify(cart))
+}
+
+function getToken() {
+  return localStorage.getItem('yeleyong_admin_token') || ''
+}
+
+function setToken(token) {
+  localStorage.setItem('yeleyong_admin_token', token)
+}
+
+function clearToken() {
+  localStorage.removeItem('yeleyong_admin_token')
+}
+
+async function api(path, opts = {}) {
+  const headers = { 'Content-Type': 'application/json', ...opts.headers }
+  const token = getToken()
+  if (token) headers.Authorization = `Bearer ${token}`
+  const res = await fetch(`${API}${path}`, { ...opts, headers })
+  const data = await res.json()
+  if (!res.ok) throw new Error(data.error || 'Request failed')
+  return data
 }
 
 export function StoreProvider({ children }) {
-  const [products, setProducts] = useState(() => {
-    if (localStorage.getItem(KEYS.schema) !== SCHEMA_VERSION) {
-      return DEFAULT_PRODUCTS
+  const [products, setProducts] = useState([])
+  const [cart, setCart] = useState(loadCart)
+  const [orders, setOrders] = useState([])
+  const [settings, setSettings] = useState(DEFAULT_SETTINGS)
+  const [adminUser, setAdminUser] = useState(null)
+  const [loading, setLoading] = useState(true)
+  const pollingRef = useRef(null)
+
+  useEffect(() => {
+    async function init() {
+      try {
+        const [p, s] = await Promise.all([api('/api/products'), api('/api/settings')])
+        setProducts(p)
+        setSettings(s)
+
+        const authRes = await api('/api/auth/me')
+        if (authRes.loggedIn) {
+          setAdminUser({ email: authRes.email })
+        }
+      } catch (e) {
+        console.error('Init error:', e)
+      }
+      setLoading(false)
     }
-    return load(KEYS.products, DEFAULT_PRODUCTS)
-  })
-  const [cart, setCart] = useState(() => load(KEYS.cart, []))
-  const [orders, setOrders] = useState(() => load(KEYS.orders, []))
-  const [settings, setSettings] = useState(() => ({ ...DEFAULT_SETTINGS, ...load(KEYS.settings, {}) }))
-  const [adminUser, setAdminUser] = useState(() => load(KEYS.session, null))
+    init()
+
+    pollingRef.current = setInterval(async () => {
+      try {
+        const [p, s, o] = await Promise.all([
+          api('/api/products'),
+          api('/api/settings'),
+          adminUser ? api('/api/orders') : Promise.resolve(null),
+        ])
+        setProducts(p)
+        setSettings(s)
+        if (o) setOrders(o)
+      } catch {}
+    }, 3000)
+
+    return () => clearInterval(pollingRef.current)
+  }, [adminUser])
+
+  useEffect(() => saveCart(cart), [cart])
 
   const isAdminLoggedIn = !!adminUser
 
   async function registerAdmin(email, password) {
-    const existing = load(KEYS.admin, null)
-    if (existing) {
-      return { ok: false, error: 'An admin account already exists. Please login instead.' }
+    try {
+      const res = await api('/api/auth/register', {
+        method: 'POST',
+        body: JSON.stringify({ email, password }),
+      })
+      setToken(res.token)
+      setAdminUser({ email })
+      return { ok: true }
+    } catch (e) {
+      return { ok: false, error: e.message }
     }
-    const hashed = await hashPassword(password)
-    save(KEYS.admin, { email: email.toLowerCase().trim(), passwordHash: hashed })
-    const user = { email: email.toLowerCase().trim() }
-    save(KEYS.session, user)
-    setAdminUser(user)
-    return { ok: true }
   }
 
   async function loginAdmin(email, password) {
-    const stored = load(KEYS.admin, null)
-    if (!stored) {
-      return { ok: false, error: 'No admin account found. Please register first.' }
+    try {
+      const res = await api('/api/auth/login', {
+        method: 'POST',
+        body: JSON.stringify({ email, password }),
+      })
+      setToken(res.token)
+      setAdminUser({ email })
+      return { ok: true }
+    } catch (e) {
+      return { ok: false, error: e.message }
     }
-    if (stored.email !== email.toLowerCase().trim()) {
-      return { ok: false, error: 'Incorrect email or password.' }
-    }
-    const hashed = await hashPassword(password)
-    if (hashed !== stored.passwordHash) {
-      return { ok: false, error: 'Incorrect email or password.' }
-    }
-    const user = { email: stored.email }
-    save(KEYS.session, user)
-    setAdminUser(user)
-    return { ok: true }
   }
 
   function logoutAdmin() {
-    localStorage.removeItem(KEYS.session)
+    clearToken()
     setAdminUser(null)
   }
 
   function hasAdminAccount() {
-    return !!load(KEYS.admin, null)
+    return true
   }
-
-  useEffect(() => save(KEYS.products, products), [products])
-  useEffect(() => {
-    localStorage.setItem(KEYS.schema, SCHEMA_VERSION)
-  }, [])
-  useEffect(() => save(KEYS.cart, cart), [cart])
-  useEffect(() => save(KEYS.orders, orders), [orders])
-  useEffect(() => save(KEYS.settings, settings), [settings])
 
   function priceOf(product) {
     return product.price * (1 - (product.discount || 0) / 100)
@@ -170,30 +177,48 @@ export function StoreProvider({ children }) {
     return { lines, subtotal }
   }
 
-  function placeOrder(details) {
-    const order = {
-      id: `YL-${Date.now().toString().slice(-6)}`,
-      ...details,
-      status: 'pending',
-      createdAt: new Date().toISOString(),
-    }
-    setOrders((prev) => [order, ...prev])
+  async function placeOrder(details) {
+    const res = await api('/api/orders', {
+      method: 'POST',
+      body: JSON.stringify(details),
+    })
     clearCart()
-    return order
+    return { id: res.id, ...details }
   }
 
-  function updateOrderStatus(id, status) {
-    setOrders((prev) => prev.map((o) => (o.id === id ? { ...o, status } : o)))
+  async function updateOrderStatus(id, status) {
+    await api(`/api/orders/${id}`, {
+      method: 'PATCH',
+      body: JSON.stringify({ status }),
+    })
   }
 
   function getOrder(id) {
     return orders.find((o) => o.id.toUpperCase() === String(id).trim().toUpperCase())
   }
 
+  async function saveProduct(product) {
+    await api(`/api/products/${product.id}`, {
+      method: 'PUT',
+      body: JSON.stringify(product),
+    })
+  }
+
+  async function deleteProduct(id) {
+    await api(`/api/products/${id}`, { method: 'DELETE' })
+  }
+
+  async function saveSettings(newSettings) {
+    await api('/api/settings', {
+      method: 'PUT',
+      body: JSON.stringify(newSettings),
+    })
+  }
+
   const value = useMemo(
     () => ({
       products,
-      setProducts,
+      setProducts: saveProduct,
       cart,
       addToCart,
       setQty,
@@ -205,15 +230,17 @@ export function StoreProvider({ children }) {
       updateOrderStatus,
       getOrder,
       settings,
-      setSettings,
+      setSettings: saveSettings,
       adminUser,
       isAdminLoggedIn,
       registerAdmin,
       loginAdmin,
       logoutAdmin,
       hasAdminAccount,
+      loading,
+      deleteProduct,
     }),
-    [products, cart, orders, settings, adminUser],
+    [products, cart, orders, settings, adminUser, loading],
   )
 
   return <StoreContext.Provider value={value}>{children}</StoreContext.Provider>
