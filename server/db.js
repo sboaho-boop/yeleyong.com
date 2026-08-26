@@ -91,7 +91,9 @@ export async function initDB() {
       category TEXT NOT NULL,
       price REAL NOT NULL,
       discount REAL DEFAULT 0,
+      description TEXT DEFAULT '',
       image TEXT DEFAULT '',
+      images TEXT DEFAULT '[]',
       emoji TEXT DEFAULT '',
       color TEXT DEFAULT '#6366f1',
       inStock INTEGER DEFAULT 1
@@ -128,6 +130,10 @@ export async function initDB() {
       password TEXT NOT NULL
     )
   `)
+
+  const cols = query('PRAGMA table_info(products)').map((c) => c.name)
+  if (!cols.includes('description')) run('ALTER TABLE products ADD COLUMN description TEXT DEFAULT \'\'')
+  if (!cols.includes('images')) run('ALTER TABLE products ADD COLUMN images TEXT DEFAULT \'[]\'')
 
   const r = query('SELECT COUNT(*) as count FROM products')
   if (r[0].count === 0) {

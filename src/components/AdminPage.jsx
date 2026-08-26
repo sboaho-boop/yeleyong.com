@@ -11,9 +11,11 @@ const EMPTY_FORM = {
   category: CATEGORIES[0],
   price: '',
   discount: 0,
+  description: '',
   emoji: '📦',
   color: PRESET_COLORS[0],
   image: '',
+  images: [],
   inStock: true,
 }
 
@@ -52,9 +54,24 @@ export default function AdminPage() {
     }
   }
 
+  async function handleGalleryUpload(e) {
+    const files = e.target.files
+    if (!files || files.length === 0) return
+    try {
+      const dataUrls = await Promise.all(Array.from(files).map(readFileAsDataURL))
+      setForm((f) => ({ ...f, images: [...(f.images || []), ...dataUrls] }))
+    } catch {
+      alert('Could not read one or more files.')
+    }
+  }
+
+  function removeGalleryImage(idx) {
+    setForm((f) => ({ ...f, images: f.images.filter((_, i) => i !== idx) }))
+  }
+
   async function saveProduct(e) {
     e.preventDefault()
-    const data = { ...form, price: Number(form.price) || 0, discount: Number(form.discount) || 0 }
+    const data = { ...form, price: Number(form.price) || 0, discount: Number(form.discount) || 0, images: form.images || [] }
     if (form.id) {
       await setProducts({ ...data, id: form.id })
     } else {
@@ -112,11 +129,22 @@ export default function AdminPage() {
             </div>
 
             <div>
-              <label className={label}>Product photo</label>
+              <label className={label}>Description</label>
+              <textarea
+                rows={3}
+                value={form.description}
+                onChange={(e) => setForm({ ...form, description: e.target.value })}
+                placeholder="Product details, specs, features..."
+                className={input}
+              />
+            </div>
+
+            <div>
+              <label className={label}>Main photo</label>
               <input
                 value={form.image}
                 onChange={(e) => setForm({ ...form, image: e.target.value })}
-                placeholder="Paste an image URL, or upload a photo below"
+                placeholder="Paste an image URL, or upload below"
                 className={input}
               />
               <div className="mt-2 flex items-center gap-3">
@@ -136,6 +164,30 @@ export default function AdminPage() {
                 <button type="button" onClick={() => setForm({ ...form, image: '' })} className="text-xs text-slate-500 hover:text-brand mt-1">
                   Remove photo (fall back to emoji)
                 </button>
+              )}
+            </div>
+
+            <div>
+              <label className={label}>Additional gallery images</label>
+              <label className="inline-flex cursor-pointer items-center gap-2 rounded-lg border border-slate-300 px-3 py-2 text-sm font-medium hover:bg-slate-50">
+                🖼️ Add images (select multiple)
+                <input type="file" accept="image/*" multiple className="hidden" onChange={handleGalleryUpload} />
+              </label>
+              {form.images && form.images.length > 0 && (
+                <div className="flex flex-wrap gap-2 mt-2">
+                  {form.images.map((img, i) => (
+                    <div key={i} className="relative group">
+                      <img src={img} alt="" className="w-16 h-16 rounded-lg object-cover border border-slate-200" />
+                      <button
+                        type="button"
+                        onClick={() => removeGalleryImage(i)}
+                        className="absolute -top-1 -right-1 w-5 h-5 rounded-full bg-rose-500 text-white text-xs font-bold grid place-items-center opacity-0 group-hover:opacity-100 transition"
+                      >
+                        ✕
+                      </button>
+                    </div>
+                  ))}
+                </div>
               )}
             </div>
 
@@ -213,6 +265,7 @@ export default function AdminPage() {
                   <p className="text-sm text-slate-500">
                     {money(p.price, settings.currency)}
                     {p.discount > 0 && <span className="text-emerald-600 font-medium"> · -{p.discount}%</span>}
+                    {p.images && p.images.length > 0 && <span className="ml-2 text-xs text-slate-400">+{p.images.length} images</span>}
                   </p>
                 </div>
                 <button onClick={() => setForm(p)} className="px-3 py-1.5 rounded-lg bg-slate-100 text-sm font-semibold hover:bg-slate-200">
@@ -243,7 +296,7 @@ export default function AdminPage() {
                     <div>
                       <p className="font-bold">{o.id}</p>
                       <p className="text-sm text-slate-500">
-                        {new Date(o.createdAt).toLocaleString()} · {o.name} · {o.phone}
+                        {new Date(o.createdAt).toLocaleString()} · {o.customerName} · {o.phone}
                       </p>
                     </div>
                     <div className="flex items-center gap-2">

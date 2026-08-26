@@ -1,14 +1,17 @@
 import { useState } from 'react'
 import { useStore, money } from '../StoreContext'
 
-export default function ProductCard({ product, onAdd }) {
+export default function ProductCard({ product, onAdd, onOpen }) {
   const { settings, priceOf } = useStore()
   const [imgError, setImgError] = useState(false)
   const price = priceOf(product)
   const hasDiscount = (product.discount || 0) > 0
 
   return (
-    <div className="group flex flex-col rounded-lg border border-slate-200 bg-white overflow-hidden hover:shadow-md hover:border-brand transition">
+    <div
+      className="group flex flex-col rounded-lg border border-slate-200 bg-white overflow-hidden hover:shadow-md hover:border-brand transition cursor-pointer"
+      onClick={() => onOpen(product)}
+    >
       <div className="relative aspect-square bg-slate-100 grid place-items-center overflow-hidden">
         {hasDiscount && (
           <span className="absolute top-2 left-2 z-10 rounded bg-brand text-white text-xs font-bold px-2 py-1">
@@ -44,7 +47,7 @@ export default function ProductCard({ product, onAdd }) {
           </div>
         </div>
         <button
-          onClick={() => onAdd(product.id)}
+          onClick={(e) => { e.stopPropagation(); onAdd(product.id) }}
           disabled={!product.inStock}
           className="mt-2 w-full py-2 rounded bg-brand-light text-brand font-bold text-sm transition hover:bg-brand hover:text-white disabled:opacity-40 disabled:cursor-not-allowed"
         >

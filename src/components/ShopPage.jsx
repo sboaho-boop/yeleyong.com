@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useStore } from '../StoreContext'
 import ProductCard from './ProductCard'
+import ProductDetailModal from './ProductDetailModal'
 
 const SLIDES = [
   {
@@ -29,6 +30,7 @@ const SLIDES = [
 export default function ShopPage({ onAdd, goCheckout, category, setCategory, query }) {
   const { products, cart } = useStore()
   const [slide, setSlide] = useState(0)
+  const [selectedProduct, setSelectedProduct] = useState(null)
 
   useEffect(() => {
     const t = setInterval(() => setSlide((s) => (s + 1) % SLIDES.length), 5000)
@@ -112,7 +114,7 @@ export default function ShopPage({ onAdd, goCheckout, category, setCategory, que
         ) : (
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3">
             {filtered.map((p) => (
-              <ProductCard key={p.id} product={p} onAdd={onAdd} />
+              <ProductCard key={p.id} product={p} onAdd={onAdd} onOpen={setSelectedProduct} />
             ))}
           </div>
         )}
@@ -127,6 +129,14 @@ export default function ShopPage({ onAdd, goCheckout, category, setCategory, que
             Checkout ({cart.reduce((s, i) => s + i.qty, 0)} item{cart.reduce((s, i) => s + i.qty, 0) > 1 ? 's' : ''}) →
           </button>
         </div>
+      )}
+
+      {selectedProduct && (
+        <ProductDetailModal
+          product={selectedProduct}
+          onClose={() => setSelectedProduct(null)}
+          onAdd={onAdd}
+        />
       )}
     </div>
   )
