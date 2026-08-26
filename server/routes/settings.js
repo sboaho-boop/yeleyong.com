@@ -15,12 +15,18 @@ const DEFAULT_SETTINGS = {
   location: 'Adenta, Accra - Ghana',
 }
 
+const NUMERIC_KEYS = ['promoDiscount', 'deliveryFee']
+
 router.get('/', (req, res) => {
   const settingsRows = query('SELECT * FROM settings')
   const settings = { ...DEFAULT_SETTINGS }
   for (const r of settingsRows) {
-    const num = Number(r.value)
-    settings[r.key] = isNaN(num) ? r.value : num
+    if (NUMERIC_KEYS.includes(r.key)) {
+      const num = Number(r.value)
+      settings[r.key] = isNaN(num) ? r.value : num
+    } else {
+      settings[r.key] = r.value
+    }
   }
   res.json(settings)
 })
