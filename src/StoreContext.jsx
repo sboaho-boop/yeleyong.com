@@ -1,6 +1,6 @@
 import { createContext, useContext, useEffect, useMemo, useState, useRef } from 'react'
 
-const API = import.meta.env.VITE_API_URL || ''
+const API = import.meta.env.VITE_API_URL || 'https://yeleyong-com.onrender.com'
 
 const StoreContext = createContext(null)
 
